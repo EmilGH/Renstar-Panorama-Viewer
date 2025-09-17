@@ -6,6 +6,12 @@ It works entirely in the browser — no database, no server-side processing beyo
 
 ---
 
+## Screenshot
+
+![Renstar Panorama Viewer Screenshot](screenshot.png)
+
+---
+
 ## Features
 
 - Auto-detects panoramas (`.jpg`, `.jpeg`, `.png`) in an `/images` folder.  
@@ -94,12 +100,6 @@ Edit these at the top of `index.php`:
 
 - Custom author name:  
   `https://example.com/360/?author=Bridge+Global+Logistics`
-
----
-
-## Screenshot
-
-![Renstar Panorama Viewer Screenshot](screenshot.png)
 
 ---
 
