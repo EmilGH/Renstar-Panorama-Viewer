@@ -1,0 +1,18 @@
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# IDE/editor
+.vscode/
+.idea/
+
+# Logs / cache
+*.log
+cache/
+tmp/
+
+# Node / tooling (if you add tooling later)
+node_modules/
+
+# Optional: keep empty folders if you add them
+*.keep
