@@ -111,6 +111,30 @@ Here's how you can export from Insta360 to work with this script:
 
 ---
 
+## Roadmap (next up)
+
+- **Scene Titles & Descriptions**  
+  Derive human-readable titles from filenames; show optional overlay text per scene.
+
+- **Start/Stop Auto-Rotate**  
+  Add a small UI control that calls `viewer.startAutoRotate(speed)` / `viewer.stopAutoRotate()`.
+
+- **URL State Sync**  
+  Persist `yaw`, `pitch`, and `hfov` to the URL on `viewchange` so shared links preserve framing.
+
+- **Folder Icons as Files**  
+  Replace inline `data:` SVGs with `icons/folder.svg` and `icons/up.svg` for easier theming.
+
+- **Multires Tiling (Performance)**  
+  Optional Pannellum multires pre-tiling for buttery 8K performance on mobile.
+
+- **Video Support**  
+  Add a “video poster” scene with a hotspot to play an MP4/YouTube/Vimeo overlay, or open a dedicated page.  
+  - MVP: hotspot of type `info` with `URL` to a video page.  
+  - Enhanced: lightweight modal overlay with `<video>` for hosted MP4.---
+
+---
+
 ## License
 
 MIT — use freely, modify, and redistribute.
