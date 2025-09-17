@@ -103,6 +103,14 @@ Edit these at the top of `index.php`:
 
 ---
 
+## Insta360 Export Settings
+
+Here's how you can export from Insta360 to work with this script:
+
+![Insta360 Export Settings](Insta360-Export-Settings.png)
+
+---
+
 ## License
 
 MIT — use freely, modify, and redistribute.
