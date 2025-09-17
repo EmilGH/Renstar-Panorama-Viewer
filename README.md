@@ -1,5 +1,7 @@
 # Renstar Panorama Viewer
 
+(Works with Insta360 and more!)
+
 Renstar Panorama Viewer is a lightweight PHP + [Pannellum](https://pannellum.org/) front-end for displaying panoramic images (equirectangular JPG/PNG, 2:1 aspect ratio) on any basic web host.  
 
 It works entirely in the browser — no database, no server-side processing beyond PHP directory scans — making it easy to drop into shared hosting or a static site environment that supports PHP.
