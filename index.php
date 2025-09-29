@@ -10,18 +10,17 @@
 
 // Error visibility (tune for prod)
 if ($_REQUEST["debug"] == 1)
-	{
-		ini_set('display_errors', '1');
-		error_reporting(E_ALL);
-	}
+{
+    ini_set('display_errors', '1');
+    error_reporting(E_ALL);
+}
 else
-	{
-		ini_set('display_errors', '0');
-		ini_set('log_errors', '1');
-		@mkdir(__DIR__ . '/logs', 0750, true);
-		ini_set('error_log', __DIR__ . '/logs/php_errors.log');
-	}
-
+{
+    ini_set('display_errors', '0');
+    ini_set('log_errors', '1');
+    @mkdir(__DIR__ . '/logs', 0750, true);
+    ini_set('error_log', __DIR__ . '/logs/php_errors.log');
+}
 
 // -------------------- Experience Config --------------------
 $authorName      = filter_input(INPUT_GET, 'author', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'Emil';  // Default Author Name -- Can be set by URL Param
@@ -47,57 +46,57 @@ $defaultZoom     = max(50, min(120, (int)$defaultZoom));
 
 // -------------------- Helpers --------------------
 function isAllowedImage(string $file, array $allowedExt): bool {
-	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-	return in_array($ext, $allowedExt, true);
+    $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+    return in_array($ext, $allowedExt, true);
 }
 
 function cleanLabel(string $name): string {
-	// Strip extension and make "some-file-name" -> "Some File Name"
-	$base = preg_replace('/\.[a-z0-9]+$/i', '', $name);
-	$base = str_replace(['_', '-'], ' ', $base);
-	$base = preg_replace('/\s+/', ' ', trim($base));
-	return ucwords(strtolower($base));
+    // Strip extension and make "some-file-name" -> "Some File Name"
+    $base = preg_replace('/\.[a-z0-9]+$/i', '', $name);
+    $base = str_replace(['_', '-'], ' ', $base);
+    $base = preg_replace('/\s+/', ' ', trim($base));
+    return ucwords(strtolower($base));
 }
 
 function slugify(string $s): string {
-	$s = strtolower($s);
-	$s = preg_replace('/\.[a-z0-9]+$/i', '', $s); // drop extension
-	$s = preg_replace('/[^a-z0-9]+/i', '-', $s);
-	$s = trim($s, '-');
-	return $s !== '' ? $s : 'scene';
+    $s = strtolower($s);
+    $s = preg_replace('/\.[a-z0-9]+$/i', '', $s); // drop extension
+    $s = preg_replace('/[^a-z0-9]+/i', '-', $s);
+    $s = trim($s, '-');
+    return $s !== '' ? $s : 'scene';
 }
 
 function listSubdirs(string $root): array {
-	$dirs = [];
-	if (!is_dir($root)) return $dirs;
-	foreach (scandir($root) as $entry) {
-		if ($entry[0] === '.') continue;
-		$full = $root . DIRECTORY_SEPARATOR . $entry;
-		if (is_dir($full)) $dirs[] = $entry;
-	}
-	natcasesort($dirs);
-	return array_values($dirs);
+    $dirs = [];
+    if (!is_dir($root)) return $dirs;
+    foreach (scandir($root) as $entry) {
+        if ($entry[0] === '.') continue;
+        $full = $root . DIRECTORY_SEPARATOR . $entry;
+        if (is_dir($full)) $dirs[] = $entry;
+    }
+    natcasesort($dirs);
+    return array_values($dirs);
 }
 
 function listImagesIn(string $dirFs, array $allowedExt): array {
-	$imgs = [];
-	if (!is_dir($dirFs)) return $imgs;
-	foreach (scandir($dirFs) as $entry) {
-		if ($entry[0] === '.') continue;
-		if (is_file($dirFs . DIRECTORY_SEPARATOR . $entry) && isAllowedImage($entry, $allowedExt)) {
-			$imgs[] = $entry;
-		}
-	}
-	natcasesort($imgs);
-	return array_values($imgs);
+    $imgs = [];
+    if (!is_dir($dirFs)) return $imgs;
+    foreach (scandir($dirFs) as $entry) {
+        if ($entry[0] === '.') continue;
+        if (is_file($dirFs . DIRECTORY_SEPARATOR . $entry) && isAllowedImage($entry, $allowedExt)) {
+            $imgs[] = $entry;
+        }
+    }
+    natcasesort($imgs);
+    return array_values($imgs);
 }
 
 function findActualFileInsensitive(string $needle, array $files): ?string {
-	$target = strtolower($needle);
-	foreach ($files as $f) {
-		if (strtolower($f) === $target) return $f;
-	}
-	return null;
+    $target = strtolower($needle);
+    foreach ($files as $f) {
+        if (strtolower($f) === $target) return $f;
+    }
+    return null;
 }
 
 // -------------------- Inputs --------------------
@@ -115,14 +114,14 @@ $currentDirWeb    = $imagesDirWeb;
 $requestedDirRaw = $requestedDir;
 $resolvedDir = null;
 foreach ($subdirs as $d) {
-	if (strcasecmp($requestedDirRaw, $d) === 0) { $resolvedDir = $d; break; }
+    if (strcasecmp($requestedDirRaw, $d) === 0) { $resolvedDir = $d; break; }
 }
 
 if ($requestedDirRaw !== '' && $resolvedDir !== null) {
-	$inSubdir       = true;
-	$currentDirName = $resolvedDir; // use actual casing
-	$currentDirFs   = $imagesDirFs . DIRECTORY_SEPARATOR . $resolvedDir;
-	$currentDirWeb  = $imagesDirWeb . '/' . rawurlencode($resolvedDir);
+    $inSubdir       = true;
+    $currentDirName = $resolvedDir; // use actual casing
+    $currentDirFs   = $imagesDirFs . DIRECTORY_SEPARATOR . $resolvedDir;
+    $currentDirWeb  = $imagesDirWeb . '/' . rawurlencode($resolvedDir);
 }
 
 // -------------------- GATHER CONTENT --------------------
@@ -135,15 +134,14 @@ $folderImages = [];
 $emptySubdir = false;
 
 if ($inSubdir) {
-	$folderImages = listImagesIn($currentDirFs, $allowedExt);
-	if (empty($folderImages)) {
-		$emptySubdir = true; // mark it; don't set $hasScenes here
-	}
+    $folderImages = listImagesIn($currentDirFs, $allowedExt);
+    if (empty($folderImages)) {
+        $emptySubdir = true; // mark it; don't set $hasScenes here
+    }
 } else {
-	$rootFolders = $subdirs; // show folders as thumbnails
-	$rootImages  = listImagesIn($imagesDirFs, $allowedExt);
+    $rootFolders = $subdirs; // show folders as thumbnails
+    $rootImages  = listImagesIn($imagesDirFs, $allowedExt);
 }
-
 
 // -------------------- BUILD SCENES --------------------
 $scenes = [];
@@ -153,22 +151,22 @@ $dedupe = [];
 
 // Add scenes helper
 $addScene = function(string $webPath, string $idBase) use (&$scenes, &$sceneOrder, &$dedupe, $defaultZoom) {
-	$sceneId = slugify($idBase);
-	if (isset($dedupe[$sceneId])) {
-		$dedupe[$sceneId]++;
-		$sceneId .= '-' . $dedupe[$sceneId];
-	} else {
-		$dedupe[$sceneId] = 1;
-	}
-	$scenes[$sceneId] = [
-		'type'     => 'equirectangular',
-		'panorama' => $webPath,
-		'hfov'     => $defaultZoom,
-		'pitch'    => 0,
-		'yaw'      => 0
-	];
-	$sceneOrder[] = $sceneId;
-	return $sceneId;
+    $sceneId = slugify($idBase);
+    if (isset($dedupe[$sceneId])) {
+        $dedupe[$sceneId]++;
+        $sceneId .= '-' . $dedupe[$sceneId];
+    } else {
+        $dedupe[$sceneId] = 1;
+    }
+    $scenes[$sceneId] = [
+        'type'     => 'equirectangular',
+        'panorama' => $webPath,
+        'hfov'     => $defaultZoom,
+        'pitch'    => 0,
+        'yaw'      => 0
+    ];
+    $sceneOrder[] = $sceneId;
+    return $sceneId;
 };
 
 // In ROOT mode, we can include:
@@ -179,76 +177,76 @@ $firstSceneId = null;
 
 $welcomeActual = null;
 if (!$inSubdir) {
-	// If welcome file exists (any case), add it first as the initial scene
-	$welcomeActual = findActualFileInsensitive($welcomeFile, $rootImages);
-	if ($welcomeActual !== null) {
-		$welcomePath = $imagesDirWeb . '/' . rawurlencode($welcomeActual);
-		$firstSceneId = $addScene($welcomePath, $welcomeActual);
-	}
+    // If welcome file exists (any case), add it first as the initial scene
+    $welcomeActual = findActualFileInsensitive($welcomeFile, $rootImages);
+    if ($welcomeActual !== null) {
+        $welcomePath = $imagesDirWeb . '/' . rawurlencode($welcomeActual);
+        $firstSceneId = $addScene($welcomePath, $welcomeActual);
+    }
 
-	// Add other root images (skip the actual welcome file we found)
-	foreach ($rootImages as $img) {
-		if ($welcomeActual !== null && strcasecmp($img, $welcomeActual) === 0) continue;
-		$web = $imagesDirWeb . '/' . rawurlencode($img);
-		$sid = $addScene($web, $img);
-		$sceneIdByFilename[$img] = $sid;
-	}
+    // Add other root images (skip the actual welcome file we found)
+    foreach ($rootImages as $img) {
+        if ($welcomeActual !== null && strcasecmp($img, $welcomeActual) === 0) continue;
+        $web = $imagesDirWeb . '/' . rawurlencode($img);
+        $sid = $addScene($web, $img);
+        $sceneIdByFilename[$img] = $sid;
+    }
 
-	if ($firstSceneId === null && !empty($sceneOrder)) {
-		$firstSceneId = $sceneOrder[0];
-	}
+    if ($firstSceneId === null && !empty($sceneOrder)) {
+        $firstSceneId = $sceneOrder[0];
+    }
 
-	if ($requestedImage !== '' && isset($sceneIdByFilename[$requestedImage])) {
-		$firstSceneId = $sceneIdByFilename[$requestedImage];
-	}
-	if ($requestedSceneId !== '' && isset($scenes[$requestedSceneId])) {
-		$firstSceneId = $requestedSceneId;
-	}
+    if ($requestedImage !== '' && isset($sceneIdByFilename[$requestedImage])) {
+        $firstSceneId = $sceneIdByFilename[$requestedImage];
+    }
+    if ($requestedSceneId !== '' && isset($scenes[$requestedSceneId])) {
+        $firstSceneId = $requestedSceneId;
+    }
 } else {
-	// SUBDIR mode: only include images from the folder as scenes
-	foreach ($folderImages as $img) {
-		$web = $currentDirWeb . '/' . rawurlencode($img);
-		// Use id base as "dir/filename" to avoid collisions
-		$sid = $addScene($web, $currentDirName . '-' . $img);
-		$sceneIdByFilename[$img] = $sid;
-	}
-	// First scene: requested image/scene or first image
-	if ($requestedImage !== '' && isset($sceneIdByFilename[$requestedImage])) {
-		$firstSceneId = $sceneIdByFilename[$requestedImage];
-	} elseif ($requestedSceneId !== '' && isset($scenes[$requestedSceneId])) {
-		$firstSceneId = $requestedSceneId;
-	} elseif (!empty($sceneOrder)) {
-		$firstSceneId = $sceneOrder[0];
-	}
+    // SUBDIR mode: only include images from the folder as scenes
+    foreach ($folderImages as $img) {
+        $web = $currentDirWeb . '/' . rawurlencode($img);
+        // Use id base as "dir/filename" to avoid collisions
+        $sid = $addScene($web, $currentDirName . '-' . $img);
+        $sceneIdByFilename[$img] = $sid;
+    }
+    // First scene: requested image/scene or first image
+    if ($requestedImage !== '' && isset($sceneIdByFilename[$requestedImage])) {
+        $firstSceneId = $sceneIdByFilename[$requestedImage];
+    } elseif ($requestedSceneId !== '' && isset($scenes[$requestedSceneId])) {
+        $firstSceneId = $requestedSceneId;
+    } elseif (!empty($sceneOrder)) {
+        $firstSceneId = $sceneOrder[0];
+    }
 }
 
 // Defensive: if an unknown ?scene is passed, ignore it
 if ($requestedSceneId !== '' && !isset($scenes[$requestedSceneId])) {
-	$requestedSceneId = '';
+    $requestedSceneId = '';
 }
 
 // Final config
 $hasScenes = !$emptySubdir && !empty($scenes) && $firstSceneId !== null;
 
 $config = $hasScenes ? [
-	'default' => [
-		'firstScene'        => $firstSceneId,
-		'autoLoad'          => true,
-		'sceneFadeDuration' => 800,
-		'author'            => $authorName,
-		'autoRotate'        => $defaultSpin,
-		'minHfov'           => 50,
-		'maxHfov'           => 120,
-		'compass'           => false
-	],
-	'scenes' => $scenes
+    'default' => [
+        'firstScene'        => $firstSceneId,
+        'autoLoad'          => true,
+        'sceneFadeDuration' => 800,
+        'author'            => $authorName,
+        'autoRotate'        => $defaultSpin,
+        'minHfov'           => 50,
+        'maxHfov'           => 120,
+        'compass'           => false
+    ],
+    'scenes' => $scenes
 ] : [];
 $configJson   = json_encode($config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
 // -------------------- UI DATA --------------------
 function folderThumbUrl(string $dirName): string {
-	// Clicking a folder goes to ?dir=Name&nav=1 (UI nav = show Up button)
-	return '?dir=' . rawurlencode($dirName) . '&nav=1';
+    // Clicking a folder goes to ?dir=Name&nav=1 (UI nav = show Up button)
+    return '?dir=' . rawurlencode($dirName) . '&nav=1';
 }
 
 function rootUrl(): string { return '?nav=1'; } // returning to root shows Up when you came from UI
@@ -281,9 +279,9 @@ function rootUrl(): string { return '?nav=1'; } // returning to root shows Up wh
   <link rel="dns-prefetch"         href="https://cdn.jsdelivr.net">
 
   <link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"
-	integrity="sha384-02yn80EH0cF+s23taAmuhEZ04p3CTbQvV0QZMr2reUxajpfvcLNKlzsPkZwx14mf"
-	crossorigin="anonymous">
+    href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"
+    integrity="sha384-02yn80EH0cF+s23taAmuhEZ04p3CTbQvV0QZMr2reUxajpfvcLNKlzsPkZwx14mf"
+    crossorigin="anonymous">
 
   <script
     src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"
@@ -291,269 +289,277 @@ function rootUrl(): string { return '?nav=1'; } // returning to root shows Up wh
     crossorigin="anonymous"></script>
 
   <style>
-	:root {
-		--bg: #0f0f10;
-		--panel: #181a1b;
-		--text: #e8e8e8;
-		--accent: #00e5ff;
-		--accent-dim: #79f1ff;
-		--thumb-border: #2a2d2f;
-		--thumb-active: #00e5ff;
-	}
+    :root {
+        --bg: #0f0f10;
+        --panel: #181a1b;
+        --text: #e8e8e8;
+        --accent: #00e5ff;
+        --accent-dim: #79f1ff;
+        --thumb-border: #2a2d2f;
+        --thumb-active: #00e5ff;
+    }
 
-	html,
-	body {
-		height: 100%;
-		margin: 0;
-		background: var(--bg);
-		color: var(--text);
-		font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-	}
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    }
 
-	header {
-		padding: .75rem 1rem;
-		background: var(--panel);
-		border-bottom: 1px solid #222;
-	}
+    header {
+        padding: .75rem 1rem;
+        background: var(--panel);
+        border-bottom: 1px solid #222;
+    }
 
-	header h1 {
-		margin: 0;
-		font-size: 1rem;
-		letter-spacing: .03em;
-		font-weight: 600;
-	}
+    header h1 {
+        margin: 0;
+        font-size: 1rem;
+        letter-spacing: .03em;
+        font-weight: 600;
+    }
 
-	#panorama {
-		width: 100%;
-		height: calc(100vh - 170px);
-		background: #000;
-	}
+    #panorama {
+        width: 100%;
+        height: calc(100vh - 170px);
+        background: #000;
+    }
 
-	.bar {
-		display: flex;
-		gap: .5rem;
-		align-items: center;
-		padding: .5rem 1rem;
-		background: var(--panel);
-		border-top: 1px solid #222;
-		overflow-x: auto;
-	}
+    .bar {
+        display: flex;
+        gap: .5rem;
+        align-items: center;
+        padding: .5rem 1rem;
+        background: var(--panel);
+        border-top: 1px solid #222;
+        overflow-x: auto;
+    }
 
-	.thumb,
-	.thumb-folder {
-		display: inline-flex;
-		flex-direction: column;
-		align-items: center;
-		gap: .35rem;
-		background: transparent;
-		border: 1px solid var(--thumb-border);
-		border-radius: .5rem;
-		padding: .35rem .35rem .5rem;
-		cursor: pointer;
-		user-select: none;
-		transition: transform .12s ease, border-color .12s ease;
-		min-width: 170px;
-		text-decoration: none;
-		color: inherit;
-	}
+    .thumb,
+    .thumb-folder {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        gap: .35rem;
+        background: transparent;
+        border: 1px solid var(--thumb-border);
+        border-radius: .5rem;
+        padding: .35rem .35rem .5rem;
+        cursor: pointer;
+        user-select: none;
+        transition: transform .12s ease, border-color .12s ease;
+        min-width: 170px;
+        text-decoration: none;
+        color: inherit;
+    }
 
-	.thumb:focus,
-	.thumb-folder:focus {
-		outline: none;
-		border-color: var(--accent);
-	}
+    .thumb:focus,
+    .thumb-folder:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
 
-	.thumb:hover,
-	.thumb-folder:hover {
-		transform: translateY(-2px);
-		border-color: var(--accent-dim);
-	}
+    .thumb:hover,
+    .thumb-folder:hover {
+        transform: translateY(-2px);
+        border-color: var(--accent-dim);
+    }
 
-	.thumb.active {
-		border-color: var(--thumb-active);
-		box-shadow: 0 0 0 1px var(--thumb-active) inset;
-	}
+    .thumb.active {
+        border-color: var(--thumb-active);
+        box-shadow: 0 0 0 1px var(--thumb-active) inset;
+    }
 
-	.thumb img,
-	.thumb-folder img {
-		width: 160px;
-		height: 90px;
-		object-fit: cover;
-		object-position: center;
-		display: block;
-		border-radius: .35rem;
-		background: #000;
-	}
+    .thumb img,
+    .thumb-folder img {
+        width: 160px;
+        height: 90px;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+        border-radius: .35rem;
+        background: #000;
+    }
 
-	.thumb span,
-	.thumb-folder span {
-		display: block;
-		max-width: 160px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		font-size: .8rem;
-		color: #cfd3d6;
-	}
+    .thumb span,
+    .thumb-folder span {
+        display: block;
+        max-width: 160px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: .8rem;
+        color: #cfd3d6;
+    }
 
-	.up {
-		border-style: dashed;
-	}
+    .up {
+        border-style: dashed;
+    }
 
-	.empty {
-		padding: 2rem 1rem;
-		text-align: center;
-		color: #bbb;
-	}
+    .empty {
+        padding: 2rem 1rem;
+        text-align: center;
+        color: #bbb;
+    }
 
-	@media (max-width: 600px) {
-		#panorama {
-			height: calc(100vh - 150px);
-		}
-
-		.thumb,
-		.thumb-folder {
-			min-width: 150px;
-		}
-
-		.thumb img,
-		.thumb-folder img {
-			width: 140px;
-			height: 78px;
-		}
-	}
+    @media (max-width: 600px) {
+        #panorama { height: calc(100vh - 150px); }
+        .thumb, .thumb-folder { min-width: 150px; }
+        .thumb img, .thumb-folder img { width: 140px; height: 78px; }
+    }
   </style>
 </head>
 <body>
   <header>
-	<h1><?= $siteTitle; ?><?= $inSubdir ? ' — ' . htmlspecialchars(cleanLabel($currentDirName)) : '' ?></h1>
+    <h1><?= $siteTitle; ?><?= $inSubdir ? ' — ' . htmlspecialchars(cleanLabel($currentDirName)) : '' ?></h1>
   </header>
 
   <?php if (!$hasScenes): ?>
-	<div class="empty">
-	  <p>No panoramas found. Place stitched equirectangular JPG/PNG files in <code><?= htmlspecialchars($imagesDirWeb) ?></code>.</p>
-	</div>
+    <div class="empty">
+      <p>No panoramas found. Place stitched equirectangular JPG/PNG files in <code><?= htmlspecialchars($imagesDirWeb) ?></code>.</p>
+    </div>
   <?php else: ?>
-	<div id="panorama"></div>
+    <div id="panorama"></div>
 
-	<!-- Thumbnail bar -->
-	<div class="bar" id="thumbbar" role="list" aria-label="Panorama thumbnails">
-	  <?php if (!$inSubdir): ?>
-		<!-- Folder thumbnails at ROOT -->
-<?php foreach ($rootFolders as $folder): ?>
-		  <?php
-			// Try to show the first image in the folder as the tile preview
-			$folderFs  = $imagesDirFs . DIRECTORY_SEPARATOR . $folder;
-			$firstImg  = listImagesIn($folderFs, $allowedExt)[0] ?? null;
-		
-			if ($firstImg) {
-				// Build the real image path (already URL-encoded by segment)
-				$srcPath  = $imagesDirWeb . '/' . rawurlencode($folder) . '/' . rawurlencode($firstImg);
-				// Point the IMG tag to the thumbnail generator (do NOT re-encode $srcPath)
-				$thumbSrc = 'thumbs.php?src=' . $srcPath . '&w=160&h=90';
-			} else {
-				// Fallback to inline SVG if folder has no images
-				$thumbSrc = "data:image/svg+xml;charset=utf-8," . rawurlencode(
-				  "<svg xmlns='http://www.w3.org/2000/svg' width='320' height='180'>
-					 <rect width='320' height='180' fill='#0b0b0c'/>
-					 <path d='M30 65h90l10 12h160a10 10 0 0 1 10 10v60a10 10 0 0 1-10 10H30a10 10 0 0 1-10-10V75a10 10 0 0 1 10-10z' fill='#2b7'/>
-				   </svg>"
-				);
-			}
-		  ?>
-		  <a role="listitem" class="thumb-folder" href="<?= folderThumbUrl($folder) ?>" aria-label="Open folder <?= htmlspecialchars(cleanLabel($folder)) ?>">
-			<img src="<?= htmlspecialchars($thumbSrc) ?>" alt="" loading="lazy" decoding="async" width="160" height="90">
-			<span><?= htmlspecialchars(cleanLabel($folder)) ?></span>
-		  </a>
-		<?php endforeach; ?>
+    <!-- Thumbnail bar -->
+    <div class="bar" id="thumbbar" role="list" aria-label="Panorama thumbnails">
+      <?php if (!$inSubdir): ?>
+        <!-- Folder thumbnails at ROOT -->
+        <?php foreach ($rootFolders as $folder): ?>
+          <?php
+            // Try to show the first image in the folder as the tile preview
+            $folderFs  = $imagesDirFs . DIRECTORY_SEPARATOR . $folder;
+            $firstImg  = listImagesIn($folderFs, $allowedExt)[0] ?? null;
 
-		<!-- Image thumbnails at ROOT (excluding welcome.jpg) -->
-		<?php
-		  // Build map from filename -> sceneId to know which is active
-		  foreach ($sceneIdByFilename as $file => $sid):
-			  if (isset($welcomeActual) && $welcomeActual !== null && strcasecmp($file, $welcomeActual) === 0) continue; // hide welcome from thumbnails
-			  $web = $imagesDirWeb . '/' . rawurlencode($file);
-			  $label = cleanLabel($file);
-			  $thumbUrl = 'thumbs.php?src=' . $web . '&w=160&h=90';
-			  $active = ($sid === $firstSceneId) ? ' active' : '';
-		?>
-		  <button role="listitem" class="thumb<?= $active ?>" data-scene="<?= htmlspecialchars($sid) ?>" aria-label="Load <?= htmlspecialchars($label) ?>" <?= $active ? 'aria-current="true"' : '' ?>>
-			<img src="<?= htmlspecialchars($thumbUrl) ?>" alt="<?= htmlspecialchars($label) ?>" loading="lazy" decoding="async" width="160" height="90">
-			<span><?= htmlspecialchars($label) ?></span>
-		  </button>
-		<?php endforeach; ?>
+            if ($firstImg) {
+                // Build the real image path (already URL-encoded by segment)
+                $srcPath  = $imagesDirWeb . '/' . rawurlencode($folder) . '/' . rawurlencode($firstImg);
+                // Point the IMG tag to the thumbnail generator (do NOT re-encode $srcPath)
+                $thumbSrc = 'thumbs.php?src=' . $srcPath . '&w=160&h=90';
+            } else {
+                // Fallback to inline SVG if folder has no images
+                $thumbSrc = "data:image/svg+xml;charset=utf-8," . rawurlencode(
+                  "<svg xmlns='http://www.w3.org/2000/svg' width='320' height='180'>
+                     <rect width='320' height='180' fill='#0b0b0c'/>
+                     <path d='M30 65h90l10 12h160a10 10 0 0 1 10 10v60a10 10 0 0 1-10 10H30a10 10 0 0 1-10-10V75a10 10 0 0 1 10-10z' fill='#2b7'/>
+                   </svg>"
+                );
+            }
+          ?>
+          <a role="listitem" class="thumb-folder" href="<?= folderThumbUrl($folder) ?>" aria-label="Open folder <?= htmlspecialchars(cleanLabel($folder)) ?>">
+            <img src="<?= htmlspecialchars($thumbSrc) ?>" alt="" loading="lazy" decoding="async" width="160" height="90">
+            <span><?= htmlspecialchars(cleanLabel($folder)) ?></span>
+          </a>
+        <?php endforeach; ?>
 
-	  <?php else: ?>
-		<!-- Subdir thumbnails -->
-<?php if ($fromUiNav): ?>
-		  <!-- Up button only when navigated via UI (not for deep links) -->
-		  <a role="listitem" class="thumb-folder up" href="<?= rootUrl() ?>" aria-label="Up one level">
-			<img
-			  src="data:image/svg+xml;charset=utf-8,<?= rawurlencode('<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'320\' height=\'180\'><rect width=\'320\' height=\'180\' fill=\'#0b0b0c\'/><polygon points=\'160,40 80,120 120,120 120,160 200,160 200,120 240,120\' fill=\'#eee\'/></svg>') ?>"
-			  alt=""
-			  loading="lazy" decoding="async" width="160" height="90">
-			<span>Up</span>
-		  </a>
-		<?php endif; ?>
-		<?php foreach ($sceneIdByFilename as $file => $sid):
-			  $web   = $currentDirWeb . '/' . rawurlencode($file);
-			  $label = cleanLabel($file);
-			  $active = ($sid === $firstSceneId) ? ' active' : '';
-			  $thumbUrl = 'thumbs.php?src=' . $web . '&w=160&h=90';
-		?>
-		  <button role="listitem" class="thumb<?= $active ?>" data-scene="<?= htmlspecialchars($sid) ?>" aria-label="Load <?= htmlspecialchars($label) ?>" <?= $active ? 'aria-current="true"' : '' ?>>
-		    <img src="<?= htmlspecialchars($thumbUrl) ?>" alt="<?= htmlspecialchars($label) ?>" loading="lazy" decoding="async" width="160" height="90">
-			<span><?= htmlspecialchars($label) ?></span>
-		  </button>
-		<?php endforeach; ?>
-	  <?php endif; ?>
-	</div>
+        <!-- Image thumbnails at ROOT (excluding welcome.jpg) -->
+        <?php
+          // Build map from filename -> sceneId to know which is active
+          foreach ($sceneIdByFilename as $file => $sid):
+              if (isset($welcomeActual) && $welcomeActual !== null && strcasecmp($file, $welcomeActual) === 0) continue; // hide welcome from thumbnails
+              $web = $imagesDirWeb . '/' . rawurlencode($file);
+              $label = cleanLabel($file);
+              $thumbUrl = 'thumbs.php?src=' . $web . '&w=160&h=90';
+              $active = ($sid === $firstSceneId) ? ' active' : '';
+        ?>
+          <button role="listitem" class="thumb<?= $active ?>" data-scene="<?= htmlspecialchars($sid) ?>" aria-label="Load <?= htmlspecialchars($label) ?>" <?= $active ? 'aria-current="true"' : '' ?>>
+            <img src="<?= htmlspecialchars($thumbUrl) ?>" alt="<?= htmlspecialchars($label) ?>" loading="lazy" decoding="async" width="160" height="90">
+            <span><?= htmlspecialchars($label) ?></span>
+          </button>
+        <?php endforeach; ?>
 
-	<script>
-	  // Pannellum configuration generated by PHP
-	  const CONFIG = <?= $configJson ?>;
-	  const viewer = pannellum.viewer('panorama', { ...CONFIG });
+      <?php else: ?>
+        <!-- Subdir thumbnails -->
+        <?php if ($fromUiNav): ?>
+          <!-- Up button only when navigated via UI (not for deep links) -->
+          <a role="listitem" class="thumb-folder up" href="<?= rootUrl() ?>" aria-label="Up one level">
+            <img
+              src="data:image/svg+xml;charset=utf-8,<?= rawurlencode('<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'320\' height=\'180\'><rect width=\'320\' height=\'180\' fill=\'#0b0b0c\'/><polygon points=\'160,40 80,120 120,120 120,160 200,160 200,120 240,120\' fill=\'#eee\'/></svg>') ?>"
+              alt=""
+              loading="lazy" decoding="async" width="160" height="90">
+            <span>Up</span>
+          </a>
+        <?php endif; ?>
+        <?php foreach ($sceneIdByFilename as $file => $sid):
+              $web   = $currentDirWeb . '/' . rawurlencode($file);
+              $label = cleanLabel($file);
+              $active = ($sid === $firstSceneId) ? ' active' : '';
+              $thumbUrl = 'thumbs.php?src=' . $web . '&w=160&h=90';
+        ?>
+          <button role="listitem" class="thumb<?= $active ?>" data-scene="<?= htmlspecialchars($sid) ?>" aria-label="Load <?= htmlspecialchars($label) ?>" <?= $active ? 'aria-current="true"' : '' ?>>
+            <img src="<?= htmlspecialchars($thumbUrl) ?>" alt="<?= htmlspecialchars($label) ?>" loading="lazy" decoding="async" width="160" height="90">
+            <span><?= htmlspecialchars($label) ?></span>
+          </button>
+        <?php endforeach; ?>
+      <?php endif; ?>
+    </div>
 
-	  // Stop spin on first interaction
-		['mousedown','touchstart','wheel','keydown'].forEach(evt =>
-		  viewer.getContainer().addEventListener(evt, () => viewer.stopAutoRotate(), { once:true })
-		);
+    <script>
+      // Pannellum configuration generated by PHP
+      const CONFIG = <?= $configJson ?>;
+      const viewer = pannellum.viewer('panorama', { ...CONFIG });
 
-	  // Thumbnail interactions (only for image buttons; folder links are anchors)
-	  const thumbbar = document.getElementById('thumbbar');
-	  const thumbs = Array.from(thumbbar.querySelectorAll('.thumb'));
+      // Derive spin speed from config; fallback if missing
+      const spinSpeed = (CONFIG && CONFIG.default && typeof CONFIG.default.autoRotate === 'number')
+        ? CONFIG.default.autoRotate
+        : -2;
 
-	  function setActiveThumb(id) {
-		  thumbs.forEach(btn => {
-			const on = btn.dataset.scene === id;
-			btn.classList.toggle('active', on);
-			if (on) btn.setAttribute('aria-current','true'); else btn.removeAttribute('aria-current');
-		  });
-		}
+      function startSpin() { try { viewer.startAutoRotate(spinSpeed); } catch (e) {} }
+      function stopSpin()  { try { viewer.stopAutoRotate(); } catch (e) {} }
 
-	  thumbs.forEach(btn => {
-		btn.addEventListener('click', () => {
-		  const id = btn.dataset.scene;
-		  if (viewer.getScene() !== id) {
-			viewer.loadScene(id);
-			setActiveThumb(id);
-			// Preserve dir if present; set scene param
-			const url = new URL(window.location.href);
-			url.searchParams.set('scene', id);
-			history.replaceState(null, '', url.toString());
-		  }
-		});
-	  });
+      // Stop spin on first user interaction (felt responsiveness)
+      ['mousedown','touchstart','wheel','keydown'].forEach(evt =>
+        viewer.getContainer().addEventListener(evt, () => stopSpin(), { once:true })
+      );
 
-	  viewer.on('scenechange', () => {
-		viewer.stopAutoRotate();
-		setActiveThumb(viewer.getScene());
-	  });
+      // Thumbnail interactions (only for image buttons; folder links are anchors)
+      const thumbbar = document.getElementById('thumbbar');
+      const thumbs = Array.from(thumbbar.querySelectorAll('.thumb'));
 
-	  window.addEventListener('resize', () => {
-		try { viewer.resize(); } catch (e) {}
-	  });
-	</script>
+      function setActiveThumb(id) {
+        thumbs.forEach(btn => {
+          const on = btn.dataset.scene === id;
+          btn.classList.toggle('active', on);
+          if (on) btn.setAttribute('aria-current','true'); else btn.removeAttribute('aria-current');
+        });
+      }
+
+      thumbs.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.scene;
+          if (viewer.getScene() !== id) {
+            // immediate UI feedback
+            setActiveThumb(id);
+
+            // When the new scene loads, restart auto-rotate
+            const onLoad = () => {
+              startSpin();
+              if (typeof viewer.off === 'function') viewer.off('load', onLoad);
+            };
+            viewer.on('load', onLoad);
+
+            viewer.loadScene(id);
+
+            // Update URL (?scene=...)
+            const url = new URL(window.location.href);
+            url.searchParams.set('scene', id);
+            history.replaceState(null, '', url.toString());
+          }
+        });
+      });
+
+      // Keep UI in sync on programmatic scene changes; do NOT stop spin here
+      viewer.on('scenechange', () => {
+        setActiveThumb(viewer.getScene());
+      });
+
+      // Ensure viewer adjusts if layout changes
+      window.addEventListener('resize', () => {
+        try { viewer.resize(); } catch (e) {}
+      });
+    </script>
   <?php endif; ?>
 </body>
 </html>
