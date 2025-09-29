@@ -9,8 +9,19 @@
 // ------------------------------------------------------------
 
 // Error visibility (tune for prod)
-ini_set('display_errors', '1');
-error_reporting(E_ALL);
+if ($_REQUEST["debug"] == 1)
+	{
+		ini_set('display_errors', '1');
+		error_reporting(E_ALL);
+	}
+else
+	{
+		ini_set('display_errors', '0');
+		ini_set('log_errors', '1');
+		@mkdir(__DIR__ . '/logs', 0750, true);
+		ini_set('error_log', __DIR__ . '/logs/php_errors.log');
+	}
+
 
 // -------------------- Experience Config --------------------
 $authorName      = filter_input(INPUT_GET, 'author', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'Emil';  // Default Author Name -- Can be set by URL Param
@@ -436,9 +447,12 @@ function rootUrl(): string { return '?nav=1'; } // returning to root shows Up wh
 			$firstImg  = listImagesIn($folderFs, $allowedExt)[0] ?? null;
 		
 			if ($firstImg) {
-				$thumbSrc = $imagesDirWeb . '/' . rawurlencode($folder) . '/' . rawurlencode($firstImg);
+				// Build the real image path (already URL-encoded by segment)
+				$srcPath  = $imagesDirWeb . '/' . rawurlencode($folder) . '/' . rawurlencode($firstImg);
+				// Point the IMG tag to the thumbnail generator (do NOT re-encode $srcPath)
+				$thumbSrc = 'thumbs.php?src=' . $srcPath . '&w=160&h=90';
 			} else {
-				// Fallback to a lightweight inline SVG if the folder has no images
+				// Fallback to inline SVG if folder has no images
 				$thumbSrc = "data:image/svg+xml;charset=utf-8," . rawurlencode(
 				  "<svg xmlns='http://www.w3.org/2000/svg' width='320' height='180'>
 					 <rect width='320' height='180' fill='#0b0b0c'/>
@@ -460,10 +474,11 @@ function rootUrl(): string { return '?nav=1'; } // returning to root shows Up wh
 			  if (isset($welcomeActual) && $welcomeActual !== null && strcasecmp($file, $welcomeActual) === 0) continue; // hide welcome from thumbnails
 			  $web = $imagesDirWeb . '/' . rawurlencode($file);
 			  $label = cleanLabel($file);
+			  $thumbUrl = 'thumbs.php?src=' . $web . '&w=160&h=90';
 			  $active = ($sid === $firstSceneId) ? ' active' : '';
 		?>
 		  <button role="listitem" class="thumb<?= $active ?>" data-scene="<?= htmlspecialchars($sid) ?>" aria-label="Load <?= htmlspecialchars($label) ?>" <?= $active ? 'aria-current="true"' : '' ?>>
-			<img src="<?= htmlspecialchars($web) ?>" alt="<?= htmlspecialchars($label) ?>" loading="lazy" decoding="async" width="160" height="90">
+			<img src="<?= htmlspecialchars($thumbUrl) ?>" alt="<?= htmlspecialchars($label) ?>" loading="lazy" decoding="async" width="160" height="90">
 			<span><?= htmlspecialchars($label) ?></span>
 		  </button>
 		<?php endforeach; ?>
@@ -484,9 +499,10 @@ function rootUrl(): string { return '?nav=1'; } // returning to root shows Up wh
 			  $web   = $currentDirWeb . '/' . rawurlencode($file);
 			  $label = cleanLabel($file);
 			  $active = ($sid === $firstSceneId) ? ' active' : '';
+			  $thumbUrl = 'thumbs.php?src=' . $web . '&w=160&h=90';
 		?>
 		  <button role="listitem" class="thumb<?= $active ?>" data-scene="<?= htmlspecialchars($sid) ?>" aria-label="Load <?= htmlspecialchars($label) ?>" <?= $active ? 'aria-current="true"' : '' ?>>
-			<img src="<?= htmlspecialchars($web) ?>" alt="<?= htmlspecialchars($label) ?>" loading="lazy" decoding="async" width="160" height="90">
+		    <img src="<?= htmlspecialchars($thumbUrl) ?>" alt="<?= htmlspecialchars($label) ?>" loading="lazy" decoding="async" width="160" height="90">
 			<span><?= htmlspecialchars($label) ?></span>
 		  </button>
 		<?php endforeach; ?>
